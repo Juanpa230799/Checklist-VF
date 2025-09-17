@@ -6,7 +6,8 @@ from io import BytesIO
 
 # --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
-img = Image.open(r"C:\\Users\\JPEREIRA\\OneDrive - PILLIN S.A\\Escritorio\\Checklist\\logo.png")  
+#img = Image.open(r"C:\\Users\\JPEREIRA\\OneDrive - PILLIN S.A\\Escritorio\\Checklist\\logo.png")  
+img = Image.open("logo.png")
 # --- Título con imagen al lado ---
 col1, col2 = st.columns([0.1, 1])  # Ajusta el tamaño relativo
 col1.image(img, width=60)   # Reemplaza "logo.png" por el nombre de tu archivo de imagen
@@ -112,4 +113,5 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
