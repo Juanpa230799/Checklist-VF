@@ -1,11 +1,19 @@
 import streamlit as st
+from PIL import Image
 from datetime import date
 import pandas as pd
 from io import BytesIO
 
 # --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
-st.title("Checklist Área de Planificación ✅")
+img = Image.open(r"C:\\Users\\JPEREIRA\\OneDrive - PILLIN S.A\\Escritorio\\Checklist\\logo.png")  
+# --- Título con imagen al lado ---
+col1, col2 = st.columns([0.1, 1])  # Ajusta el tamaño relativo
+col1.image(img, width=60)   # Reemplaza "logo.png" por el nombre de tu archivo de imagen
+col2.markdown("## Checklist Área de Planificación")  # Markdown para simular título
+
+#st.title("Checklist Área de Planificación")
+#st.image("logo.png", width=50)  # Ajusta el width según necesites
 
 # --- Información del checklist ---
 col1, col2, col3 = st.columns(3)
@@ -23,6 +31,7 @@ tienda = col3.selectbox("🏪 Tienda", tiendas)
 
 st.markdown("---")  # separador
 
+st.subheader("Puntos a revisar")
 # --- Lista de tareas ---
 tareas = [
     "Cubicación",
@@ -39,10 +48,26 @@ tareas = [
 
 # --- Estado de tareas ---
 estado = []
+valores_comentario = []
+valores_opcion = []
+
+opcion_cub = [70,75,80,85,90,95,100,105,110,115,120,125,130]
+
 for tarea in tareas:
-    checked = st.checkbox(tarea)
+
+    checked = st.checkbox(tarea, key=f"chk_{tarea}")
     estado.append(checked)
 
+    if tarea == "Cubicación":
+        opciones = st.selectbox(f"% Cub", opcion_cub, key=f"opt_{tarea}")
+        valores_opcion.append(opciones)
+        valores_comentario.append("")
+    else:
+        #checked = st.checkbox(tarea)
+        #estado.append(checked)
+        comentario = st.text_input(f"Comentario para '{tarea}'", key=f"com_{tarea}")
+        valores_opcion.append("")
+        valores_comentario.append(comentario)
 # --- Progreso ---
 completadas = sum(estado)
 total = len(tareas)
@@ -61,13 +86,16 @@ else:
 
 # --- Botón para guardar en Excel ---
 if st.button("✅ Completado"):
+
     # Crear DataFrame combinando info general y checklist
     df = pd.DataFrame({
         "Fecha": [fecha_checklist]*len(tareas),
         "Encargado": [encargado]*len(tareas),
         "Tienda": [tienda]*len(tareas),
         "Tarea": tareas,
-        "Completada": estado
+        "Completada": estado,
+        "Valor": valores_opcion,       # columna nueva
+        "Comentario": valores_comentario  # columna nueva
     })
 
     # Guardar a Excel en memoria
@@ -84,3 +112,4 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
