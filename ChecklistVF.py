@@ -151,7 +151,7 @@ total = len(tareas)
 progreso = completadas / total if total > 0 else 0
 
 st.progress(progreso)
-st.write(f"Has completado **{completadas} de {total} tareas**.")
+st.write(f"Haz completado **{completadas} de {total} ítems**.")
 
 # --- Mensaje motivador ---
 faltantes = total - completadas
@@ -190,6 +190,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
