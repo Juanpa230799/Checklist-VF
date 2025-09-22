@@ -130,7 +130,7 @@ for tarea in tareas:
     estado.append(checked)
 
     if tarea == "Cubicación":
-        opciones = st.select_slider(f"% Cub", opcion_cub = [70,75,80,85,90,95,100,105,110,115,120,125,130], value=None, key=f"opt_{tarea}")
+        opciones = st.select_slider(f"% Cub", options = [70,75,80,85,90,95,100,105,110,115,120,125,130], value=None, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         valores_comentario.append("")
     else:
@@ -183,6 +183,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
