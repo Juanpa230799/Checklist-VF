@@ -105,7 +105,8 @@ st.markdown("---")  # separador
 st.subheader("Puntos a revisar")
 # --- Lista de tareas ---
 tareas = [
-    "Cubicación",
+    "Cubicación vestuario",
+    "Cubicación calzado",
     "Reposición (Curva, RAMI)",
     "Despachos",
     "Club Pillin",
@@ -121,7 +122,7 @@ tareas = [
 estado = []
 valores_comentario = []
 valores_opcion = []
-
+valores_opcion2 = []
 opcion_cub = [70,75,80,85,90,95,100,105,110,115,120,125,130]
 
 for tarea in tareas:
@@ -129,9 +130,13 @@ for tarea in tareas:
     checked = st.checkbox(tarea, key=f"chk_{tarea}")
     estado.append(checked)
 
-    if tarea == "Cubicación":
-        opciones = st.selectbox(f"% Cub", opcion_cub, index=1, key=f"opt_{tarea}")
+    if tarea == "Cubicación vestuario":
+        opciones = st.selectbox(f"% Cub", opcion_cub, index=7, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
+        valores_comentario.append("")
+    elif tarea == "Cubicación calzado":
+        opciones = st.selectbox(f"% Cub", opcion_cub, index=7, key=f"opt_{tarea}")
+        valores_opcion2.append(opciones)
         valores_comentario.append("")
     else:
         #checked = st.checkbox(tarea)
@@ -183,6 +188,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
