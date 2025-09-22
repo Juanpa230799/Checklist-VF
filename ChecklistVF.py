@@ -98,7 +98,7 @@ tiendas = [
     "Santa Filomena 540",
     "Rancagua Outlet Mall",
 ]
-tienda = col3.selectbox("🏪 Tienda", index=8, tiendas)
+tienda = col3.selectbox("🏪 Tienda", tiendas, index=8)
 
 st.markdown("---")  # separador
 
@@ -188,6 +188,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
