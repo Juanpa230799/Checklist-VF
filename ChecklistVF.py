@@ -4,10 +4,6 @@ from datetime import date
 import pandas as pd
 from io import BytesIO
 
-# --- OneDrive ---
-from office365.sharepoint.client_context import ClientContext
-from office365.runtime.auth.user_credential import UserCredential
-
 # --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
 #img = Image.open(r"C:\\Users\\JPEREIRA\\OneDrive - PILLIN S.A\\Escritorio\\Checklist\\logo.png")  
@@ -162,16 +158,9 @@ elif completadas > 0:
     st.info(f"💪 Aún faltan **{faltantes}** puntos por abordar." )
 else:
     st.warning("🙌 Aún no comienzas tu Checklist")
-
-# --- OneDrive Config ---
-site_url = "https://1drv.ms/x/c/41dd00801bd46bea/EeCFp_G5FYNHm-VwvMwy_AEBau-PMXaCBdkEET-EbCd06A?e=vnpN7T"
-folder_url = "https://onedrive.live.com/?login_hint=jppereiran23%40hotmail%2Ecom&view=1"
-file_name = "Checklist_Completo.xlsx"
-user = "jppereiran23@hotmail.com"
-app_password = "rizbwsdnanryoift"  # Reemplaza por tu contraseña de aplicación
+    
 # --- Botón para guardar en Excel ---
 if st.button("✅ Completado"):
-
     # Crear DataFrame combinando info general y checklist
     df = pd.DataFrame({
         "Fecha": [fecha_checklist]*len(tareas),
@@ -181,38 +170,21 @@ if st.button("✅ Completado"):
         "Completada": estado,
         "Valor": valores_opcion,       # columna nueva
         "Comentario": valores_comentario  # columna nueva
-    })
-    try:
-        # Conexión a OneDrive
-        ctx = ClientContext(site_url).with_credentials(UserCredential(user, app_password))
-
-        # Descargar Excel existente
-        file = ctx.web.get_folder_by_server_relative_url(folder_url).get_file(file_name).download().execute_query()
-        excel_bytes = BytesIO(file.content)
-        df_existente = pd.read_excel(excel_bytes, sheet_name="Checklist")
-
-        # Agregar nueva fila
-        df_actualizado = pd.concat([df_existente, df], ignore_index=True)
+    })    
+    # Guardar a Excel en memoria
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name="Checklist")
         
-        # Guardar a Excel en memoria
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name="Checklist")
-
-    # Subir archivo actualizado
-        ctx.web.get_folder_by_server_relative_url(folder_url).upload_file(file_name, output.getvalue()).execute_query()
-        st.success("📤 Checklist guardado en OneDrive exitosamente")
-    #processed_data = output.getvalue()
+    processed_data = output.getvalue()
 
     # Botón para descargar
-    except Exception as e:
-        st.error(f"❌ Error al subir a OneDrive: {e}")
-   # st.download_button(
-    #    label="📥 Descargar checklist",
-     #   data=processed_data,
-      #  file_name="Checklist_Completo.xlsx",
-       # mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-   # )
+    st.download_button(
+        label="📥 Descargar checklist",
+        data=processed_data,
+        file_name="Checklist_Completo.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 
 
 
