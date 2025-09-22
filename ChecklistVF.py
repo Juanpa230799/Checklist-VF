@@ -130,7 +130,7 @@ for tarea in tareas:
     estado.append(checked)
 
     if tarea == "Cubicación":
-        opciones = st.selectbox(f"% Cub", opcion_cub, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"% Cub", opcion_cub, index=0, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         valores_comentario.append("")
     else:
@@ -183,6 +183,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
