@@ -165,7 +165,7 @@ else:
 
 # --- OneDrive Config ---
 site_url = "https://1drv.ms/x/c/41dd00801bd46bea/EeCFp_G5FYNHm-VwvMwy_AEBau-PMXaCBdkEET-EbCd06A?e=vnpN7T"
-folder_url = "Shared Documents"
+folder_url = "OneDrive/Documents"
 file_name = "Checklist_Completo.xlsx"
 user = "jppereiran23@hotmail.com"
 app_password = "rizbwsdnanryoift"  # Reemplaza por tu contraseña de aplicación
@@ -213,6 +213,7 @@ if st.button("✅ Completado"):
       #  file_name="Checklist_Completo.xlsx",
        # mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
    # )
+
 
 
 
