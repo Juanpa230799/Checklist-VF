@@ -123,7 +123,7 @@ tareas = [
 estado = []
 valores_comentario = []
 valores_opcion = []
-valores_opcion2 = []
+
 opcion_cub = [70,75,80,85,90,95,100,105,110,115,120,125,130]
 
 for tarea in tareas:
@@ -154,12 +154,13 @@ st.progress(progreso)
 st.write(f"Has completado **{completadas} de {total} tareas**.")
 
 # --- Mensaje motivador ---
+faltantes = total - completadas
 if completadas == total:
-    st.success("🎉 ¡Excelente! Completaste todo el checklist.")
+    st.success("🎉 ¡Checklist completo!")
 elif completadas > 0:
-    st.info("💪 Vas avanzando, sigue así.")
+    st.info(f"💪 Aún faltan **{faltantes}** puntos por abordar." )
 else:
-    st.warning("🙌 Aún no comienzas, ¡manos a la obra!")
+    st.warning("🙌 Aún no comienzas tu Checklist")
 
 # --- Botón para guardar en Excel ---
 if st.button("✅ Completado"):
@@ -189,6 +190,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
