@@ -27,7 +27,7 @@ encargados = ["Brany Gómez", "Gerardo Muñoz", "Juan Pablo"]  # aquí pones tu 
 encargado = col2.selectbox("👤 Encargado", encargados)
 
 # Tienda
-tiendas = [""] + [
+tiendas = [
     "Plaza Calama",
     "Plaza Antofagasta",
     "Plaza Copiapo",
@@ -98,7 +98,7 @@ tiendas = [""] + [
     "Santa Filomena 540",
     "Rancagua Outlet Mall",
 ]
-tienda = col3.selectbox("🏪 Tienda", tiendas)
+tienda = col3.selectbox("🏪 Tienda", index=8, tiendas)
 
 st.markdown("---")  # separador
 
@@ -188,6 +188,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
