@@ -122,7 +122,7 @@ estado = []
 valores_comentario = []
 valores_opcion = []
 
-opcion_cub = [""] + [70,75,80,85,90,95,100,105,110,115,120,125,130]
+opcion_cub = ["-- Seleccionar --"] + [70,75,80,85,90,95,100,105,110,115,120,125,130]
 
 for tarea in tareas:
 
@@ -183,6 +183,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
