@@ -1,4 +1,7 @@
 streamlit
 pandas
+Pillow
+office365-rest-python-client
 openpyxl
 numpy
+
