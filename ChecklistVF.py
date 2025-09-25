@@ -116,7 +116,7 @@ if st.button("✅ Completado"):
     ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
     ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
-    # --- Bordes para la tabla ---
+    # --- Definir borde fino ---
     thin_border = Border(
         left=Side(style='thin'),
         right=Side(style='thin'),
@@ -124,6 +124,12 @@ if st.button("✅ Completado"):
         bottom=Side(style='thin')
     )
 
+    # --- Bordes para las 3 primeras filas ---
+    for row in ws.iter_rows(min_row=1, max_row=3, min_col=1, max_col=4):
+        for cell in row:
+            cell.border = thin_border
+
+    # --- Bordes para la tabla ---
     for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=4):
         for cell in row:
             cell.border = thin_border
@@ -140,28 +146,3 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
