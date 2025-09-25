@@ -90,9 +90,6 @@ if st.button("✅ Completado"):
 
     # Crear DataFrame
     df = pd.DataFrame({
-        "Fecha": [fecha_str]*len(tareas),
-        "Encargado": [encargado]*len(tareas),
-        "Tienda": [tienda]*len(tareas),
         "Tarea": tareas,
         "Completada": estado,
         "Valor": valores_opcion,
@@ -102,19 +99,25 @@ if st.button("✅ Completado"):
     # Guardar a Excel en memoria
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name="Checklist")
+        df.to_excel(writer, index=False, sheet_name="Checklist", startrow=3)  # comenzamos en fila 4
 
     # Abrir con openpyxl para aplicar formato
     output.seek(0)
     wb = load_workbook(output)
     ws = wb.active
 
-    # Crear la celda combinada arriba
-    titulo = f"Fecha: {fecha_str} | Encargado: {encargado} | Tienda: {tienda}"
-    ws.insert_rows(1)  # inserta fila arriba
-    ws.merge_cells("A1:G1")  # ajusta el rango según columnas
-    ws["A1"] = titulo
+    # --- Información en filas separadas ---
+    ws["A1"] = f"Fecha: {fecha_str}"
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
+
+    ws["A2"] = f"Encargado: {encargado}"
+    ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=4)
+
+    ws["A3"] = f"Tienda: {tienda}"
+    ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
 
     # Guardar cambios otra vez a BytesIO
     final_output = BytesIO()
