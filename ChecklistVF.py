@@ -43,8 +43,8 @@ tareas = [
     "Visual merchandising",
     "Competencia",
     "Gestión equipo de venta",
-    "Experiencia del cliente (CX)",
     "Dotación",
+    "Experiencia del cliente (CX)",
     "Posibles áreas de mejora"
 ]
 
@@ -153,6 +153,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
