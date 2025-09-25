@@ -4,7 +4,7 @@ from datetime import date
 import pandas as pd
 from io import BytesIO
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment, Border, Side
+from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
 
 # --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
@@ -58,14 +58,19 @@ dot = [1,2,3,4,5,6]
 for tarea in tareas:
     checked = st.checkbox(tarea, key=f"chk_{tarea}")
     estado.append(checked)
+    
     if tarea in ["Cubicación vestuario", "Cubicación calzado"]:
-        opciones = st.selectbox(f"% Cub ", opcion_cub, index=6, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"% Cub {tarea}", opcion_cub, index=6, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
-        valores_comentario.append("")
+        comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
+        valores_comentario.append(comentario)
+        
     elif tarea == "Dotación":
-        opciones = st.selectbox(f"Dotación ", dot, index=2, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"Dotación", dot, index=2, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
-        valores_comentario.append("")
+        comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
+        valores_comentario.append(comentario)
+        
     else:
         comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
         valores_opcion.append("")
@@ -89,7 +94,6 @@ else:
 
 # --- Botón para guardar en Excel ---
 if st.button("✅ Completado"):
-    #fecha_str = fecha_checklist.strftime("%Y-%m-%d")
     fecha_str = fecha_checklist.strftime("%d-%m-%Y")
 
     # Crear DataFrame solo con la tabla
@@ -141,6 +145,15 @@ if st.button("✅ Completado"):
         for cell in row:
             cell.border = thin_border
 
+    # --- Encabezados en negrita y con color ---
+    header_font = Font(bold=True)
+    header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")  # amarillo claro
+
+    for cell in ws[4]:  # fila 4, encabezados
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
     # Guardar cambios otra vez a BytesIO
     final_output = BytesIO()
     wb.save(final_output)
@@ -153,11 +166,6 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-
-
-
-
-
 
 
 
