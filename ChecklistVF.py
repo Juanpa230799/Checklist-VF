@@ -103,8 +103,8 @@ if st.button("✅ Completado"):
     wb = load_workbook(output)
     ws = wb.active
 
-    # --- Información en filas separadas ---
-    ws["A1"] = f"Fecha: {fecha_str}"
+    # --- Información en filas separadas --- 
+    ws["A1"] = f"Tienda: {tienda}"
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
 
@@ -112,7 +112,7 @@ if st.button("✅ Completado"):
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=4)
     ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
 
-    ws["A3"] = f"Tienda: {tienda}"
+    ws["A3"] = f"Fecha: {fecha_str}"
     ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
     ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
@@ -146,3 +146,4 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
