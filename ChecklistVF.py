@@ -84,7 +84,7 @@ else:
 # --- Botón para guardar en Excel ---
 if st.button("✅ Completado"):
     #fecha_str = fecha_checklist.strftime("%Y-%m-%d")
-    fecha_str = fecha_checklist.strftime("%d-%m-%Y"
+    fecha_str = fecha_checklist.strftime("%d-%m-%Y")
 
     # Crear DataFrame solo con la tabla
     df = pd.DataFrame({
@@ -147,6 +147,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
