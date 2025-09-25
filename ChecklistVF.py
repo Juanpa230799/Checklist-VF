@@ -42,8 +42,9 @@ tareas = [
     "Mix colección",
     "Visual merchandising",
     "Competencia",
+    "Gestión equipo de venta",
     "Experiencia del cliente (CX)",
-    "Dotación y gestión equipo de venta",
+    "Dotación",
     "Posibles áreas de mejora"
 ]
 
@@ -61,7 +62,7 @@ for tarea in tareas:
         opciones = st.selectbox(f"% Cub ", opcion_cub, index=6, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         valores_comentario.append("")
-    elif tarea == "Dotación y gestión equipo de venta":
+    elif tarea == "Dotación":
         opciones = st.selectbox(f"Dotación ", dot, index=2, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         valores_comentario.append("")
@@ -152,6 +153,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
