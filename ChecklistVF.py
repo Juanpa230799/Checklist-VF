@@ -19,22 +19,7 @@ col2.markdown("## Checklist Área de Planificación")
 col1, col2, col3 = st.columns(3)
 
 # Tienda
-tiendas = [
-    "Plaza Oeste","Florida Center","Plaza Alameda","Plaza Sur","Portal Rancagua","Plaza Trebol",
-    "Plaza Vespucio","Plaza Los Angeles","Plaza Norte","Apumanque","Portal Ñuñoa","Plaza Calama",
-    "Plaza Antofagasta","Portal Temuco","Arauco Premium Outlet","Paseo Viña Centro","Costanera Center",
-    "Plaza Bio Bio","Arauco Maipu","Mall del Centro Concepcion","Plaza Tobalaba","Portal Osorno",
-    "Arauco Quilicura","Plaza Copiapo","Plaza Egaña","Open Plaza Ovalle","Easton Quilicura",
-    "Vivo Outlet Maipú","Plaza Iquique","Vivo Los Trapenses","Gran Avenida Esp.Urbano",
-    "San Pedro Arauco Outlet","Portal Centro Talca","Mall Valle Curico","Arauco Chillan","Midmall Outlet",
-    "Paseo Estado","Paseo Chiloé","La Fábrica Patio Outlet","Vivo Outlet Peñuelas","Viña Outlet Park",
-    "Valdivia Centro","Vivo San Fernando","Parque Arauco","Vivo Outlet La Florida","Portal Valdivia",
-    "Patio Rancagua","Vivo Coquimbo","Vivo Outlet Temuco","Arauco Coronel","Mall Barrio Independencia",
-    "Outlet Style","Easton Temuco","PATRONATO 403","Portal El Llano","Paseo Alerce","Santa Filomena 540",
-    "Antofagasta Outlet Espacio Urbano","Paseo Costanera Puerto Montt","Paseo Puerto Varas",
-    "Vivo Outlet Chillan","Curauma Outlet","15 Norte Viña","Talca Outlet Go Florida","Pionero Punta Arenas",
-    "Rancagua Outlet Mall","Mall Paseo San Bernardo","Paseo Quillota","Easton Segundo Piso"
-]
+tiendas = ["Florida Center", "Plaza Oeste", "Costanera Center"]
 tienda = col1.selectbox("🏪 Tienda", tiendas)
 
 # Encargado
@@ -75,7 +60,7 @@ for tarea in tareas:
     estado.append(checked)
     
     if tarea in ["Cubicación vestuario", "Cubicación calzado"]:
-        opciones = st.selectbox(f"% Cub ", opcion_cub, index=6, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"% Cub {tarea}", opcion_cub, index=6, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
         valores_comentario.append(comentario)
@@ -107,83 +92,81 @@ elif completadas > 0:
 else:
     st.warning("🙌 Aún no comienzas tu Checklist")
 
-# --- Validar que todas las tareas estén completadas ---
-if all(estado):
-    if st.button("✅ Completado"):
-        fecha_str = fecha_checklist.strftime("%d-%m-%Y")
+# --- Botón para guardar en Excel ---
+if st.button("✅ Completado"):
+    fecha_str = fecha_checklist.strftime("%d-%m-%Y")
 
-        # Crear DataFrame solo con la tabla
-        df = pd.DataFrame({
-            "Tarea": tareas,
-            "Completada": estado,
-            "Valor": valores_opcion,
-            "Comentario": valores_comentario
-        })    
+    # Crear DataFrame solo con la tabla
+    df = pd.DataFrame({
+        "Tarea": tareas,
+        "Completada": estado,
+        "Valor": valores_opcion,
+        "Comentario": valores_comentario
+    })    
 
-        # Guardar a Excel en memoria
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name="Checklist", startrow=3)
+    # Guardar a Excel en memoria
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name="Checklist", startrow=3)  # tabla empieza en fila 4
 
-        # Abrir con openpyxl para aplicar formato
-        output.seek(0)
-        wb = load_workbook(output)
-        ws = wb.active
+    # Abrir con openpyxl para aplicar formato
+    output.seek(0)
+    wb = load_workbook(output)
+    ws = wb.active
 
-        # --- Información en filas separadas --- 
-        ws["A1"] = f"Tienda: {tienda}"
-        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
-        ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
+    # --- Información en filas separadas --- 
+    ws["A1"] = f"Tienda: {tienda}"
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
+    ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws["A2"] = f"Encargado: {encargado}"
-        ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=4)
-        ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
+    ws["A2"] = f"Encargado: {encargado}"
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=4)
+    ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws["A3"] = f"Fecha: {fecha_str}"
-        ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
-        ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws["A3"] = f"Fecha: {fecha_str}"
+    ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
+    ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # --- Definir borde fino ---
-        thin_border = Border(
-            left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin')
-        )
+    # --- Definir borde fino ---
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
 
-        # --- Bordes para las 3 primeras filas ---
-        for row in ws.iter_rows(min_row=1, max_row=3, min_col=1, max_col=4):
-            for cell in row:
-                cell.border = thin_border
+    # --- Bordes para las 3 primeras filas ---
+    for row in ws.iter_rows(min_row=1, max_row=3, min_col=1, max_col=4):
+        for cell in row:
+            cell.border = thin_border
 
-        # --- Bordes para la tabla ---
-        for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=4):
-            for cell in row:
-                cell.border = thin_border
+    # --- Bordes para la tabla ---
+    for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=4):
+        for cell in row:
+            cell.border = thin_border
 
-        # --- Encabezados en negrita y con color ---
-        header_font = Font(bold=True)
-        header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")  # amarillo claro
+    # --- Encabezados en negrita y con color ---
+    header_font = Font(bold=True)
+    header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")  # amarillo claro
 
-        for cell in ws[4]:  # fila 4, encabezados
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = Alignment(horizontal="center", vertical="center")
+    for cell in ws[4]:  # fila 4, encabezados
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Guardar cambios otra vez a BytesIO
-        final_output = BytesIO()
-        wb.save(final_output)
-        final_output.seek(0)
+    # Guardar cambios otra vez a BytesIO
+    final_output = BytesIO()
+    wb.save(final_output)
+    final_output.seek(0)
 
-        # Botón para descargar
-        st.download_button(
-            label="📥 Descargar checklist",
-            data=final_output,
-            file_name="Checklist_Completo.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-else:
-    st.error("❌ Debes marcar todos los check antes de completar el checklist.")
+    # Botón para descargar
+    st.download_button(
+        label="📥 Descargar checklist",
+        data=final_output,
+        file_name="Checklist_Completo.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
 
 
 
