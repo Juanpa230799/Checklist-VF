@@ -66,7 +66,7 @@ for tarea in tareas:
         valores_opcion.append(opciones)
         valores_comentario.append("")
     else:
-        comentario = st.text_input(f"Comentario para '{tarea}'", key=f"com_{tarea}")
+        comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
         valores_opcion.append("")
         valores_comentario.append(comentario)
 
@@ -152,6 +152,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
