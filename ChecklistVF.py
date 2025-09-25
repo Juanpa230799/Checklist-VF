@@ -58,12 +58,9 @@ for tarea in tareas:
     checked = st.checkbox(tarea, key=f"chk_{tarea}")
     estado.append(checked)
     if tarea in ["Cubicación vestuario", "Cubicación calzado"]:
-        opciones = st.selectbox(f"% Cub {tarea}", opcion_cub, index=6, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"% Cub ", opcion_cub, index=6, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         valores_comentario.append("")
-        comentario = st.text_input(f"Comentario para '{tarea}'", key=f"com_{tarea}")
-        valores_opcion.append("")
-        valores_comentario.append(comentario)
     elif tarea == "Dotación y gestión equipo de venta":
         opciones = st.selectbox(f"Dotación ", dot, index=2, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
@@ -155,6 +152,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
