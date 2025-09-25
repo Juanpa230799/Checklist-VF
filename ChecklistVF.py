@@ -107,7 +107,7 @@ if st.button("✅ Completado"):
     ws = wb.active
 
     # --- Información en filas separadas ---
-     ws["A1"] = f"Tienda: {tienda}"
+    ws["A1"] = f"Tienda: {tienda}"
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
 
@@ -131,6 +131,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
