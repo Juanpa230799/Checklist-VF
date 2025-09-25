@@ -19,7 +19,78 @@ col2.markdown("## Checklist Área de Planificación")
 col1, col2, col3 = st.columns(3)
 
 # Tienda
-tiendas = ["Florida Center", "Plaza Oeste", "Costanera Center"]
+tiendas = [
+    "Plaza Oeste",
+    "Florida Center",
+    "Plaza Alameda",
+    "Plaza Sur",
+    "Portal Rancagua",
+    "Plaza Trebol",
+    "Plaza Vespucio",
+    "Plaza Los Angeles",
+    "Plaza Norte",
+    "Apumanque",
+    "Portal Ñuñoa",
+    "Plaza Calama",
+    "Plaza Antofagasta",
+    "Portal Temuco",
+    "Arauco Premium Outlet",
+    "Paseo Viña Centro",
+    "Costanera Center",
+    "Plaza Bio Bio",
+    "Arauco Maipu",
+    "Mall del Centro Concepcion",
+    "Plaza Tobalaba",
+    "Portal Osorno",
+    "Arauco Quilicura",
+    "Plaza Copiapo",
+    "Plaza Egaña",
+    "Open Plaza Ovalle",
+    "Easton Quilicura",
+    "Vivo Outlet Maipú",
+    "Plaza Iquique",
+    "Vivo Los Trapenses",
+    "Gran Avenida Esp.Urbano",
+    "San Pedro Arauco Outlet",
+    "Portal Centro Talca",
+    "Mall Valle Curico",
+    "Arauco Chillan",
+    "Midmall Outlet",
+    "Paseo Estado",
+    "Paseo Chiloé",
+    "La Fábrica Patio Outlet",
+    "Vivo Outlet Peñuelas",
+    "Viña Outlet Park",
+    "Valdivia Centro",
+    "Vivo San Fernando",
+    "Parque Arauco",
+    "Vivo Outlet La Florida",
+    "Portal Valdivia",
+    "Patio Rancagua",
+    "Vivo Coquimbo",
+    "Vivo Outlet Temuco",
+    "Arauco Coronel",
+    "Mall Barrio Independencia",
+    "Outlet Style",
+    "Easton Temuco",
+    "PATRONATO 403",
+    "Portal El Llano",
+    "Paseo Alerce",
+    "Santa Filomena 540",
+    "Antofagasta Outlet Espacio Urbano",
+    "Paseo Costanera Puerto Montt",
+    "Paseo Puerto Varas",
+    "Vivo Outlet Chillan",
+    "Curauma Outlet",
+    "15 Norte Viña",
+    "Talca Outlet Go Florida",
+    "Pionero Punta Arenas",
+    "Rancagua Outlet Mall",
+    "Mall Paseo San Bernardo",
+    "Paseo Quillota",
+    "Easton Segundo Piso"
+]
+
 tienda = col1.selectbox("🏪 Tienda", tiendas)
 
 # Encargado
@@ -166,6 +237,7 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
