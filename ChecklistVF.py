@@ -20,14 +20,14 @@ col1, col2, col3 = st.columns(3)
 
 # Tienda
 tiendas = ["Florida Center", "Plaza Oeste", "Costanera Center"]
-tienda = col3.selectbox("🏪 Tienda", tiendas)
+tienda = col1.selectbox("🏪 Tienda", tiendas)
 
 # Encargado
 encargados = ["Brany Gómez", "Gerardo Muñoz", "Juan Pablo"]
 encargado = col2.selectbox("👤 Encargado", encargados)
 
 # Fecha
-fecha_checklist = col1.date_input("📅 Fecha del checklist", value=date.today())
+fecha_checklist = col3.date_input("📅 Fecha del checklist", value=date.today())
 
 st.markdown("---")  
 
@@ -146,5 +146,6 @@ if st.button("✅ Completado"):
         file_name="Checklist_Completo.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
