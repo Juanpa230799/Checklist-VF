@@ -60,7 +60,7 @@ for tarea in tareas:
     estado.append(checked)
     
     if tarea in ["Cubicación vestuario", "Cubicación calzado"]:
-        opciones = st.selectbox(f"% Cub {tarea}", opcion_cub, index=6, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"% Cub ", opcion_cub, index=6, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
         valores_comentario.append(comentario)
