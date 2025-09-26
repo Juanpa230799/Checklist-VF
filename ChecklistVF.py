@@ -124,7 +124,7 @@ else:
 # --- Validar que todas las tareas estén completadas ---
 if all(estado):
     if st.button("✅ Completado"):
-        fecha_str = fecha_checklist.strftime("%d-%m-%Y")
+        fecha_str = fecha_checklist.strftime("%Y%m%d")
 
         # Crear DataFrame solo con la tabla
         df = pd.DataFrame({
@@ -216,6 +216,7 @@ else:
 
 
 #st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
+
 
 
 
