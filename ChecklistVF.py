@@ -93,7 +93,10 @@ for tarea in tareas:
         valores_comentario.append(comentario)
         
     else:
-        comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
+        if checked:
+            comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}")
+        else:
+            comentario = ""
         valores_opcion.append("")
         valores_comentario.append(comentario)
 
@@ -190,5 +193,6 @@ if all(estado):
         )
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
+
 
 
