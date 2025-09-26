@@ -197,7 +197,7 @@ if all(estado):
 
         # Guardar directamente en OneDrive
         wb.save(ruta_completa)
-
+        st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
         # Guardar cambios otra vez a BytesIO
         #final_output = BytesIO()
         #wb.save(final_output)
@@ -215,7 +215,8 @@ else:
 
 
 
-st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
+#st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
+
 
 
 
