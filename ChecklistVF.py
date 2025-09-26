@@ -194,13 +194,14 @@ if all(estado):
             data=final_output,
             file_name="Checklist_Completo.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        #)
+        )
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
 
 
 
 #st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
+
 
 
 
