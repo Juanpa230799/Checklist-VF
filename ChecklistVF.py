@@ -184,6 +184,20 @@ if all(estado):
             cell.fill = header_fill
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
+        # Ruta de tu carpeta OneDrive (ajústala según tu PC)
+        # Ejemplo en Windows
+        carpeta_onedrive = r"C:\Users\JPEREIRA\OneDrive - PILLIN S.A\Checklist Planificación"
+
+        # Asegurar que la carpeta existe
+        os.makedirs(carpeta_onedrive, exist_ok=True)
+
+        # Nombre del archivo (con tienda y fecha para identificarlo)
+        nombre_archivo = f"Checklist_{tienda}_{fecha_str}.xlsx"
+        ruta_completa = os.path.join(carpeta_onedrive, nombre_archivo)
+
+        # Guardar directamente en OneDrive
+        wb.save(ruta_completa)
+
         # Guardar cambios otra vez a BytesIO
         #final_output = BytesIO()
         #wb.save(final_output)
@@ -199,21 +213,10 @@ if all(estado):
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
 
-# Ruta de tu carpeta OneDrive (ajústala según tu PC)
-# Ejemplo en Windows
-carpeta_onedrive = r"C:\Users\JPEREIRA\OneDrive - PILLIN S.A\Checklist Planificación"
 
-# Asegurar que la carpeta existe
-os.makedirs(carpeta_onedrive, exist_ok=True)
-
-# Nombre del archivo (con tienda y fecha para identificarlo)
-nombre_archivo = f"Checklist_{tienda}_{fecha_str}.xlsx"
-ruta_completa = os.path.join(carpeta_onedrive, nombre_archivo)
-
-# Guardar directamente en OneDrive
-wb.save(ruta_completa)
 
 st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
+
 
 
 
