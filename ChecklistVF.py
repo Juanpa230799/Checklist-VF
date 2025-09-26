@@ -154,6 +154,13 @@ if all(estado):
         ws["B3"].alignment = Alignment(horizontal="center", vertical="center")
 
         # --- Bordes para cabecera ---
+# --- Definir borde fino ---
+thin_border = Border(
+    left=Side(style='thin'),
+    right=Side(style='thin'),
+    top=Side(style='thin'),
+    bottom=Side(style='thin')
+)
 max_columna = len(df.columns)
 for row in ws.iter_rows(min_row=1, max_row=3, min_col=2, max_col=max_columna+1):
     for cell in row:
@@ -196,4 +203,5 @@ st.download_button(
 )
 
         
+
 
