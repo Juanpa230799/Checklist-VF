@@ -113,95 +113,103 @@ if all(estado):
     if st.button("✅ Completado"):
         fecha_str = fecha_checklist.strftime("%d-%m-%Y")
 
-        # Crear DataFrame solo con la tabla
+        # Crear DataFrame con checklist
         df = pd.DataFrame({
             "Tarea": tareas,
             "Completada": estado,
             "Valor": valores_opcion,
             "Comentario": valores_comentario
-        })    
+        })
 
-        # Guardar a Excel en memoria
+        from openpyxl.drawing.image import Image as XLImage
+        from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
+        from openpyxl import load_workbook
+        from io import BytesIO
+        import pandas as pd
+
+        # Número máximo de columnas según df
+        max_columna = len(df.columns)
+
+        # --- Definir borde fino ---
+        thin_border = Border(
+            left=Side(style='thin'),
+            right=Side(style='thin'),
+            top=Side(style='thin'),
+            bottom=Side(style='thin')
+        )
+
+        # --- Estilo encabezado tabla ---
+        header_font = Font(bold=True)
+        header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")  # amarillo claro
+
+        # --- Guardar DataFrame a Excel en memoria ---
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name="Checklist", startrow=3)
 
-        # Abrir con openpyxl para aplicar formato
         output.seek(0)
         wb = load_workbook(output)
         ws = wb.active
 
-        # Insertar logo en cabecera
+        # --- Insertar logo ---
         try:
             logo = XLImage("logo.png")
             logo.height = 60
             logo.width = 100
             ws.add_image(logo, "A1")
         except:
-            pass  # si no encuentra logo, sigue sin error
+            pass  # si no encuentra el logo, sigue sin error
 
-        # --- Información en filas separadas --- 
+        # --- Cabecera con información ---
         ws["B1"] = f"Tienda: {tienda}"
-        ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=5)
+        ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=max_columna+1)
         ws["B1"].alignment = Alignment(horizontal="center", vertical="center")
 
         ws["B2"] = f"Encargado: {encargado}"
-        ws.merge_cells(start_row=2, start_column=2, end_row=2, end_column=5)
+        ws.merge_cells(start_row=2, start_column=2, end_row=2, end_column=max_columna+1)
         ws["B2"].alignment = Alignment(horizontal="center", vertical="center")
 
         ws["B3"] = f"Fecha: {fecha_str}"
-        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=5)
+        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=max_columna+1)
         ws["B3"].alignment = Alignment(horizontal="center", vertical="center")
 
         # --- Bordes para cabecera ---
-# --- Definir borde fino ---
-thin_border = Border(
-    left=Side(style='thin'),
-    right=Side(style='thin'),
-    top=Side(style='thin'),
-    bottom=Side(style='thin')
-)
-max_columna = len(df.columns)
-for row in ws.iter_rows(min_row=1, max_row=3, min_col=2, max_col=max_columna+1):
-    for cell in row:
-        cell.border = thin_border
+        for row in ws.iter_rows(min_row=1, max_row=3, min_col=2, max_col=max_columna+1):
+            for cell in row:
+                cell.border = thin_border
 
-# --- Bordes para la tabla ---
-for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=max_columna):
-    for cell in row:
-        cell.border = thin_border
+        # --- Bordes para tabla ---
+        for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=max_columna):
+            for cell in row:
+                cell.border = thin_border
 
-# --- Estilo encabezados tabla ---
-for cell in ws[4]:
-    cell.font = header_font
-    cell.fill = header_fill
-    cell.alignment = Alignment(horizontal="center", vertical="center")
+        # --- Estilo encabezados tabla ---
+        for cell in ws[4]:
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = Alignment(horizontal="center", vertical="center")
 
-# --- Ajustar ancho de columnas automáticamente ---
-for col in ws.columns:
-    max_length = 0
-    col_letter = col[0].column_letter
-    for cell in col:
-        try:
-            if cell.value:
-                max_length = max(max_length, len(str(cell.value)))
-        except:
-            pass
-    ws.column_dimensions[col_letter].width = max_length + 2
+        # --- Ajustar ancho de columnas automáticamente ---
+        for col in ws.columns:
+            max_length = 0
+            col_letter = col[0].column_letter
+            for cell in col:
+                try:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+                except:
+                    pass
+            ws.column_dimensions[col_letter].width = max_length + 2
 
-# --- Guardar cambios otra vez a BytesIO ---
-final_output = BytesIO()
-wb.save(final_output)
-final_output.seek(0)
+        # --- Guardar cambios en memoria ---
+        final_output = BytesIO()
+        wb.save(final_output)
+        final_output.seek(0)
 
-# --- Botón para descargar ---
-st.download_button(
-    label="📥 Descargar checklist",
-    data=final_output,
-    file_name="Checklist_Completo.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
-
-        
-
-
+        # --- Botón para descargar ---
+        st.download_button(
+            label="📥 Descargar checklist",
+            data=final_output,
+            file_name="Checklist_Completo.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
