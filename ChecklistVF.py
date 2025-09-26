@@ -5,6 +5,7 @@ import pandas as pd
 from io import BytesIO
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
+from openpyxl.drawing.image import Image as XLImage
 
 # --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
@@ -130,62 +131,67 @@ if all(estado):
         wb = load_workbook(output)
         ws = wb.active
 
+        # Insertar logo en cabecera
+        try:
+            logo = XLImage("logo.png")
+            logo.height = 60
+            logo.width = 100
+            ws.add_image(logo, "A1")
+        except:
+            pass  # si no encuentra logo, sigue sin error
+
         # --- Información en filas separadas --- 
-        ws["A1"] = f"Tienda: {tienda}"
-        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
-        ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
+        ws["B1"] = f"Tienda: {tienda}"
+        ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=5)
+        ws["B1"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws["A2"] = f"Encargado: {encargado}"
-        ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=4)
-        ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
+        ws["B2"] = f"Encargado: {encargado}"
+        ws.merge_cells(start_row=2, start_column=2, end_row=2, end_column=5)
+        ws["B2"].alignment = Alignment(horizontal="center", vertical="center")
 
-        ws["A3"] = f"Fecha: {fecha_str}"
-        ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
-        ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
+        ws["B3"] = f"Fecha: {fecha_str}"
+        ws.merge_cells(start_row=3, start_column=2, end_row=3, end_column=5)
+        ws["B3"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # --- Definir borde fino ---
-        thin_border = Border(
-            left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin')
-        )
+        # --- Bordes para cabecera ---
+for row in ws.iter_rows(min_row=1, max_row=3, min_col=2, max_col=5):
+    for cell in row:
+        cell.border = thin_border
 
-        # --- Bordes para las 3 primeras filas ---
-        for row in ws.iter_rows(min_row=1, max_row=3, min_col=1, max_col=4):
-            for cell in row:
-                cell.border = thin_border
+# --- Bordes para la tabla ---
+for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=4):
+    for cell in row:
+        cell.border = thin_border
 
-        # --- Bordes para la tabla ---
-        for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=4):
-            for cell in row:
-                cell.border = thin_border
+# --- Estilo encabezados tabla ---
+for cell in ws[4]:
+    cell.font = header_font
+    cell.fill = header_fill
+    cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # --- Encabezados en negrita y con color ---
-        header_font = Font(bold=True)
-        header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")  # amarillo claro
+# --- Ajustar ancho de columnas automáticamente ---
+for col in ws.columns:
+    max_length = 0
+    col_letter = col[0].column_letter
+    for cell in col:
+        try:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        except:
+            pass
+    ws.column_dimensions[col_letter].width = max_length + 2
 
-        for cell in ws[4]:  # fila 4, encabezados
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = Alignment(horizontal="center", vertical="center")
+# --- Guardar cambios otra vez a BytesIO ---
+final_output = BytesIO()
+wb.save(final_output)
+final_output.seek(0)
 
-        # Guardar cambios otra vez a BytesIO
-        final_output = BytesIO()
-        wb.save(final_output)
-        final_output.seek(0)
+# --- Botón para descargar ---
+st.download_button(
+    label="📥 Descargar checklist",
+    data=final_output,
+    file_name="Checklist_Completo.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
 
-        # Botón para descargar
-        st.download_button(
-            label="📥 Descargar checklist",
-            data=final_output,
-            file_name="Checklist_Completo.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-else:
-    st.error("❌ Debes marcar todos los check antes de completar el checklist.")
-
-
-
-
-
+        
