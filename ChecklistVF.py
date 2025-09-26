@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from PIL import Image
 from datetime import date
 import pandas as pd
@@ -124,7 +123,7 @@ else:
 # --- Validar que todas las tareas estén completadas ---
 if all(estado):
     if st.button("✅ Completado"):
-        fecha_str = fecha_checklist.strftime("%Y%m%d")
+        fecha_str = fecha_checklist.strftime("%d-%m-%Y")
 
         # Crear DataFrame solo con la tabla
         df = pd.DataFrame({
@@ -184,31 +183,17 @@ if all(estado):
             cell.fill = header_fill
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Ruta de tu carpeta OneDrive (ajústala según tu PC)
-        # Ejemplo en Windows
-        carpeta_onedrive = r"C:\Users\JPEREIRA\OneDrive - PILLIN S.A\Checklist Planificación"
-
-        # Asegurar que la carpeta existe
-        os.makedirs(carpeta_onedrive, exist_ok=True)
-
-        # Nombre del archivo (con tienda y fecha para identificarlo)
-        nombre_archivo = f"Checklist_{tienda}_{fecha_str}.xlsx"
-        ruta_completa = os.path.join(carpeta_onedrive, nombre_archivo)
-
-        # Guardar directamente en OneDrive
-        wb.save(ruta_completa)
-        st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
         # Guardar cambios otra vez a BytesIO
-        #final_output = BytesIO()
-        #wb.save(final_output)
-        #final_output.seek(0)
+        final_output = BytesIO()
+        wb.save(final_output)
+        final_output.seek(0)
 
         # Botón para descargar
-        #st.download_button(
-         #   label="📥 Descargar checklist",
-          #  data=final_output,
-           # file_name="Checklist_Completo.xlsx",
-            #mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        st.download_button(
+            label="📥 Descargar checklist",
+            data=final_output,
+            file_name="Checklist_Completo.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         #)
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
@@ -216,6 +201,7 @@ else:
 
 
 #st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
+
 
 
 
