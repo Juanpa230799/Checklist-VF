@@ -121,15 +121,6 @@ if all(estado):
             "Comentario": valores_comentario
         })
 
-        from openpyxl.drawing.image import Image as XLImage
-        from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
-        from openpyxl import load_workbook
-        from io import BytesIO
-        import pandas as pd
-
-        # Número máximo de columnas según df
-        max_columna = len(df.columns)
-
         # --- Definir borde fino ---
         thin_border = Border(
             left=Side(style='thin'),
@@ -160,6 +151,9 @@ if all(estado):
         except:
             pass  # si no encuentra el logo, sigue sin error
 
+        # Número máximo de columnas según df
+        max_columna = len(df.columns)
+
         # --- Cabecera con información ---
         ws["B1"] = f"Tienda: {tienda}"
         ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=max_columna+1)
@@ -176,23 +170,28 @@ if all(estado):
         # --- Bordes para cabecera ---
         for row in ws.iter_rows(min_row=1, max_row=3, min_col=2, max_col=max_columna+1):
             for cell in row:
-                cell.border = thin_border
+                if cell is not None:
+                    cell.border = thin_border
 
         # --- Bordes para tabla ---
         for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=max_columna):
             for cell in row:
-                cell.border = thin_border
+                if cell is not None:
+                    cell.border = thin_border
 
         # --- Estilo encabezados tabla ---
         for cell in ws[4]:
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = Alignment(horizontal="center", vertical="center")
+            if cell is not None:
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = Alignment(horizontal="center", vertical="center")
 
         # --- Ajustar ancho de columnas automáticamente ---
         for col in ws.columns:
-            max_length = 0
+            if not col or col[0].value is None:
+                continue
             col_letter = col[0].column_letter
+            max_length = 0
             for cell in col:
                 try:
                     if cell.value:
