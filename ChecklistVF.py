@@ -2,40 +2,25 @@ import streamlit as st
 from PIL import Image
 from datetime import date
 import pandas as pd
+from sqlalchemy import create_engine, Table, Column, Integer, String, Boolean, Date, MetaData
 from io import BytesIO
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
-from sqlalchemy import create_engine, Table, MetaData, Column, Integer, String, Boolean, Date
+from urllib.parse import quote_plus
 
-# --- Configuración de Streamlit ---
+# --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
 img = Image.open("logo.png")
-
-# --- Conexión a Supabase ---
-DATABASE_URL = "postgresql://postgres:Planificaci%C3%B3nretail2025@db.xxxx.supabase.co:5432/postgres"
-engine = create_engine(DATABASE_URL)
-
-# --- Definir tabla manualmente (sin autoload) ---
-metadata = MetaData()
-checklist_table = Table(
-    'checklist', metadata,
-    Column('id', Integer, primary_key=True),
-    Column('tienda', String(100)),
-    Column('encargado', String(100)),
-    Column('fecha', Date),
-    Column('tarea', String(100)),
-    Column('completada', Boolean),
-    Column('valor', String(20)),
-    Column('comentario', String(500))
-)
 
 # --- Título con imagen al lado ---
 col1, col2 = st.columns([0.1, 1])
 col1.image(img, width=60)
 col2.markdown("## Checklist Área de Planificación")
 
-# --- Selección de tienda, encargado y fecha ---
+# --- Información del checklist ---
 col1, col2, col3 = st.columns(3)
+
+# Tienda
 tiendas = [
     "Plaza Oeste","Florida Center","Plaza Alameda","Plaza Sur","Portal Rancagua","Plaza Trebol",
     "Plaza Vespucio","Plaza Los Angeles","Plaza Norte","Apumanque","Portal Ñuñoa","Plaza Calama",
@@ -54,15 +39,16 @@ tiendas = [
 ]
 tienda = col1.selectbox("🏪 Tienda", tiendas)
 
+# Encargado
 encargados = ["Brany Gómez", "Gerardo Muñoz", "Juan Pablo"]
 encargado = col2.selectbox("👤 Encargado", encargados)
 
+# Fecha
 fecha_checklist = col3.date_input("📅 Fecha del checklist", value=date.today())
 
 st.markdown("---")
 
 # --- Lista de tareas ---
-st.subheader("Puntos a revisar")
 tareas = [
     "Cubicación vestuario",
     "Cubicación calzado",
@@ -78,6 +64,7 @@ tareas = [
     "Posibles áreas de mejora"
 ]
 
+# --- Estado de tareas ---
 estado = []
 valores_comentario = []
 valores_opcion = []
@@ -89,20 +76,15 @@ for tarea in tareas:
     estado.append(checked)
     
     if tarea in ["Cubicación vestuario", "Cubicación calzado"]:
-        if tarea == "Cubicación vestuario":
-            opciones = st.selectbox(f"Porcentaje vestuario", opcion_cub, index=6, key=f"opt_{tarea}")
-        else:
-            opciones = st.selectbox(f"Porcentaje calzado", opcion_cub, index=6, key=f"opt_{tarea}")
+        opciones = st.selectbox(f"Porcentaje {tarea.split()[1]}", opcion_cub, index=6, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}") if checked else ""
         valores_comentario.append(comentario)
-        
     elif tarea == "Dotación":
         opciones = st.selectbox(f"Cantidad de personal", dot, index=2, key=f"opt_{tarea}")
         valores_opcion.append(opciones)
         comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}") if checked else ""
         valores_comentario.append(comentario)
-        
     else:
         valores_opcion.append("")
         comentario = st.text_input(f"Comentario para {tarea}", key=f"com_{tarea}") if checked else ""
@@ -112,7 +94,6 @@ for tarea in tareas:
 completadas = sum(estado)
 total = len(tareas)
 progreso = completadas / total if total > 0 else 0
-
 st.progress(progreso)
 st.write(f"Haz completado **{completadas} de {total} ítems**.")
 
@@ -124,25 +105,61 @@ elif completadas > 0:
 else:
     st.warning("🙌 Aún no comienzas tu Checklist")
 
-# --- Botón para guardar en DB y descargar Excel ---
+# --- Conexión a Supabase ---
+# Reemplaza TU_CONTRASEÑA con tu contraseña real codificada
+password_encoded = quote_plus("Planificaciónretail2025")  # codifica caracteres especiales
+DATABASE_URL = f"postgresql://postgres:{password_encoded}@db.xxxx.supabase.co:5432/postgres"
+engine = create_engine(DATABASE_URL)
+metadata = MetaData()
+
+# --- Definir tabla manualmente ---
+checklist_table = Table(
+    'checklist', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('tienda', String(100)),
+    Column('encargado', String(100)),
+    Column('fecha', Date),
+    Column('tarea', String(100)),
+    Column('completada', Boolean),
+    Column('valor', String(20)),
+    Column('comentario', String(500))
+)
+
+# --- Crear tabla si no existe ---
+metadata.create_all(engine)
+
+# --- Guardar datos en base ---
 if all(estado):
     if st.button("✅ Completado"):
         fecha_str = fecha_checklist.strftime("%d-%m-%Y")
 
-        # Crear DataFrame
+        # Insertar datos en PostgreSQL
+        with engine.connect() as conn:
+            for i, tarea in enumerate(tareas):
+                conn.execute(
+                    checklist_table.insert().values(
+                        tienda=tienda,
+                        encargado=encargado,
+                        fecha=fecha_checklist,
+                        tarea=tarea,
+                        completada=estado[i],
+                        valor=valores_opcion[i],
+                        comentario=valores_comentario[i]
+                    )
+                )
+
+        # --- Crear Excel en memoria ---
         df = pd.DataFrame({
             "Tarea": tareas,
             "Completada": estado,
             "Valor": valores_opcion,
             "Comentario": valores_comentario
-        })    
+        })
 
-        # Guardar a Excel en memoria
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name="Checklist", startrow=3)
 
-        # Formato con openpyxl
         output.seek(0)
         wb = load_workbook(output)
         ws = wb.active
@@ -159,13 +176,8 @@ if all(estado):
         ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
         ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # Bordes
-        thin_border = Border(
-            left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin')
-        )
+        thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),
+                             top=Side(style='thin'), bottom=Side(style='thin'))
 
         for row in ws.iter_rows(min_row=1, max_row=3, min_col=1, max_col=4):
             for cell in row:
@@ -177,39 +189,24 @@ if all(estado):
 
         header_font = Font(bold=True)
         header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")
+
         for cell in ws[4]:
             cell.font = header_font
             cell.fill = header_fill
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Guardar cambios Excel
         final_output = BytesIO()
         wb.save(final_output)
         final_output.seek(0)
 
-        # Botón descarga
         st.download_button(
             label="📥 Descargar checklist",
             data=final_output,
             file_name="Checklist_Completo.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
-        # --- Guardar datos en Supabase ---
-        with engine.connect() as conn:
-            for i, tarea in enumerate(tareas):
-                conn.execute(checklist_table.insert().values(
-                    tienda=tienda,
-                    encargado=encargado,
-                    fecha=fecha_checklist,
-                    tarea=tarea,
-                    completada=estado[i],
-                    valor=valores_opcion[i],
-                    comentario=valores_comentario[i]
-                ))
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
-
 
 
 
