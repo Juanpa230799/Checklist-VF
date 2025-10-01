@@ -6,14 +6,24 @@ from io import BytesIO
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
 
+# --- SQLAlchemy ---
+from sqlalchemy import create_engine, Table, MetaData, text
+
+# --- Cadena de conexión a Supabase ---
+DATABASE_URL = "postgresql://postgres:[TU_CONTRASEÑA]@db.xxxx.supabase.co:5432/postgres"
+engine = create_engine(DATABASE_URL)
+
+# --- Definir la tabla checklist ---
+metadata = MetaData()
+checklist_table = Table('checklist', metadata, autoload_with=engine)
+
 # --- Título ---
 st.set_page_config(page_title="Checklist Área de Planificación", page_icon="✅")
 img = Image.open("logo.png")
 
-# --- Título con imagen al lado ---
-col1, col2 = st.columns([0.1, 1])  
-col1.image(img, width=60)   
-col2.markdown("## Checklist Área de Planificación")  
+col1, col2 = st.columns([0.1, 1])
+col1.image(img, width=60)
+col2.markdown("## Checklist Área de Planificación")
 
 # --- Información del checklist ---
 col1, col2, col3 = st.columns(3)
@@ -44,9 +54,10 @@ encargado = col2.selectbox("👤 Encargado", encargados)
 # Fecha
 fecha_checklist = col3.date_input("📅 Fecha del checklist", value=date.today())
 
-st.markdown("---")  
+st.markdown("---")
 
 st.subheader("Puntos a revisar")
+
 # --- Lista de tareas ---
 tareas = [
     "Cubicación vestuario",
@@ -76,9 +87,9 @@ for tarea in tareas:
     
     if tarea in ["Cubicación vestuario", "Cubicación calzado"]:
         if tarea == "Cubicación vestuario":
-          opciones = st.selectbox(f"Porcentaje vestuario ", opcion_cub, index=6, key=f"opt_{tarea}")  
+            opciones = st.selectbox(f"Porcentaje vestuario ", opcion_cub, index=6, key=f"opt_{tarea}")  
         else:
-          opciones = st.selectbox(f"Porcentaje calzado ", opcion_cub, index=6, key=f"opt_{tarea}")
+            opciones = st.selectbox(f"Porcentaje calzado ", opcion_cub, index=6, key=f"opt_{tarea}")
             
         valores_opcion.append(opciones)
         if checked:
@@ -110,7 +121,7 @@ total = len(tareas)
 progreso = completadas / total if total > 0 else 0
 
 st.progress(progreso)
-st.write(f"Haz completado **{completadas} de {total} ítems**.")
+st.write(f"Haz completado **{completadas de {total} ítems**.")
 
 faltantes = total - completadas
 if completadas == total:
@@ -123,9 +134,25 @@ else:
 # --- Validar que todas las tareas estén completadas ---
 if all(estado):
     if st.button("✅ Completado"):
-        fecha_str = fecha_checklist.strftime("%d-%m-%Y")
+        fecha_str = fecha_checklist.strftime("%Y-%m-%d")
 
-        # Crear DataFrame solo con la tabla
+        # --- Guardar en la base de datos ---
+        with engine.begin() as conn:
+            for i, tarea in enumerate(tareas):
+                conn.execute(
+                    checklist_table.insert().values(
+                        tienda=tienda,
+                        encargado=encargado,
+                        fecha=fecha_str,
+                        tarea=tarea,
+                        completada=estado[i],
+                        valor=valores_opcion[i],
+                        comentario=valores_comentario[i]
+                    )
+                )
+        st.success("✅ Checklist guardado en la base de datos")
+
+        # --- Crear DataFrame solo con la tabla ---
         df = pd.DataFrame({
             "Tarea": tareas,
             "Completada": estado,
@@ -156,34 +183,22 @@ if all(estado):
         ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=4)
         ws["A3"].alignment = Alignment(horizontal="center", vertical="center")
 
-        # --- Definir borde fino ---
-        thin_border = Border(
-            left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin')
-        )
-
-        # --- Bordes para las 3 primeras filas ---
-        for row in ws.iter_rows(min_row=1, max_row=3, min_col=1, max_col=4):
+        # --- Bordes ---
+        thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),
+                             top=Side(style='thin'), bottom=Side(style='thin'))
+        for row in ws.iter_rows(min_row=1, max_row=3+len(df)+1, min_col=1, max_col=4):
             for cell in row:
                 cell.border = thin_border
 
-        # --- Bordes para la tabla ---
-        for row in ws.iter_rows(min_row=4, max_row=3+len(df)+1, min_col=1, max_col=4):
-            for cell in row:
-                cell.border = thin_border
-
-        # --- Encabezados en negrita y con color ---
+        # --- Encabezados en negrita y amarillo ---
         header_font = Font(bold=True)
-        header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")  # amarillo claro
-
-        for cell in ws[4]:  # fila 4, encabezados
+        header_fill = PatternFill(start_color="FFD966", end_color="FFD966", fill_type="solid")
+        for cell in ws[4]:
             cell.font = header_font
             cell.fill = header_fill
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Guardar cambios otra vez a BytesIO
+        # Guardar cambios a BytesIO
         final_output = BytesIO()
         wb.save(final_output)
         final_output.seek(0)
@@ -197,10 +212,6 @@ if all(estado):
         )
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
-
-
-
-#st.success(f"✅ Checklist guardado en OneDrive: {ruta_completa}")
 
 
 
