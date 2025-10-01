@@ -4,4 +4,7 @@ Pillow
 office365-rest-python-client
 openpyxl
 numpy
+sqlalchemy
+psycopg2-binary
+
 
