@@ -121,7 +121,7 @@ total = len(tareas)
 progreso = completadas / total if total > 0 else 0
 
 st.progress(progreso)
-st.write(f"Haz completado **{completadas de {total} ítems**.")
+st.write(f"Haz completado **{completadas} de {total} ítems**.")
 
 faltantes = total - completadas
 if completadas == total:
@@ -212,6 +212,7 @@ if all(estado):
         )
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
+
 
 
 
