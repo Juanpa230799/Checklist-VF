@@ -10,7 +10,7 @@ from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
 from sqlalchemy import create_engine, Table, MetaData, text
 
 # --- Cadena de conexión a Supabase ---
-DATABASE_URL = "postgresql://postgres:[TU_CONTRASEÑA]@db.xxxx.supabase.co:5432/postgres"
+DATABASE_URL = "postgresql://postgres:[Planificaciónretail2025]@db.xxxx.supabase.co:5432/postgres"
 engine = create_engine(DATABASE_URL)
 
 # --- Definir la tabla checklist ---
@@ -212,6 +212,7 @@ if all(estado):
         )
 else:
     st.error("❌ Debes marcar todos los check antes de completar el checklist.")
+
 
 
 
